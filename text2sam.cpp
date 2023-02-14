@@ -18,12 +18,7 @@
 #define TAG "SAM"
 #define SAM_SAVE_PATH EXT_PATH("sam.txt")
 #define TEXT_BUFFER_SIZE 256
-// #define MESSAGES_BUFFER_SIZE 256
 STM32SAM voice;
-
-// FuriMutex* g_state_mutex;
-
-// FuriString* message;
 
 typedef enum {
     EventTypeTick,
@@ -64,10 +59,8 @@ static void text_input_callback(void* ctx) {
             app_state->input[i] = app_state->input[i];
         }
     }
-
     text_box_set_text(app_state->text_box, app_state->input);
     view_dispatcher_switch_to_view(app_state->view_dispatcher, 1);
-
     release_mutex((ValueMutex*)ctx, app_state);
 }
 
@@ -98,7 +91,6 @@ static void sam_state_free(AppState* const app_state) {
 
 static void app_input_callback(InputEvent* input_event, void* ctx) {
     furi_assert(ctx);
-
     FuriMessageQueue* event_queue = ctx;
     furi_message_queue_put(event_queue, input_event, FuriWaitForever);
 }
@@ -128,45 +120,13 @@ static bool load_messages() {
     storage_file_free(file);
     furi_record_close(RECORD_STORAGE);
     return bytes_read == TEXT_BUFFER_SIZE;
-    // FlipperFormat* ff = flipper_format_file_alloc(storage);
-
-    // DialogsApp* dialogs = (DialogsApp*)furi_record_open(RECORD_DIALOGS);
-    // DialogsFileBrowserOptions browser_options;
-    // dialog_file_browser_set_basic_options(&browser_options, ".txt", NULL);
-    // FuriString* map_file = (FuriString*)"/ext/sam"; //furi_string_alloc();
-    // // furi_string_set(map_file, "/ext/sam");
-    // if(!storage_file_exists(storage, ANY_PATH("sam"))) {
-    //     storage_common_mkdir(storage, ANY_PATH("sam")); //Make Folder If dir not exist
-    // }
-
-    // bool res = dialog_file_browser_show(dialogs, map_file, map_file, &browser_options);
-
-    // furi_record_close(RECORD_DIALOGS);
-
-    // // if user didn't choose anything, free everything and exit
-    // if(!res) {
-    //     FURI_LOG_I(TAG, "exit");
-    //     flipper_format_free(ff);
-    //     furi_record_close(RECORD_STORAGE);
-
-    //     furi_string_free(message);
-
-    //     view_port_enabled_set(view_port, false);
-    //     gui_remove_view_port(gui, view_port);
-    //     view_port_free(view_port);
-    //     free(g_state_mutex);
-    //     furi_message_queue_free(event_queue);
-
-    //     furi_record_close(RECORD_GUI);
-    //     return;
-    // }
 }
 
-extern "C" int32_t sam_app(void* p) {
+extern "C" int32_t text2sam(void* p) {
     UNUSED(p);
     app_state = (AppState*)malloc(sizeof(AppState));
 
-    // g_state_mutex = furi_mutex_alloc(FuriMutexTypeRecursive);
+    // FuriMutex* g_state_mutex = furi_mutex_alloc(FuriMutexTypeRecursive);
 
     FURI_LOG_D(TAG, "Running sam_state_init");
     sam_state_init(app_state);
@@ -178,24 +138,15 @@ extern "C" int32_t sam_app(void* p) {
         return 255;
     }
 
-    // message = furi_string_alloc();
-
     // Configure view port
     ViewPort* view_port = view_port_alloc();
     FuriMessageQueue* event_queue = furi_message_queue_alloc(8, sizeof(PluginEvent));
     // view_port_draw_callback_set(view_port, app_draw_callback, g_state_mutex);
     view_port_input_callback_set(view_port, app_input_callback, event_queue);
 
-    // // Register view port in GUI
-    // Gui* gui = (Gui*)furi_record_open(RECORD_GUI);
-    // gui_add_view_port(gui, view_port, GuiLayerFullscreen);
-
-    // InputEvent event;
-
-    //TODO: get message from file
     FURI_LOG_D(TAG, "Assigning text input callback");
 
-    load_messages();
+    load_messages(); // get message from file
     text_input_set_result_callback(
         app_state->text_input,
         text_input_callback,

@@ -1,17 +1,47 @@
-App(
+App( # the only one that works:
     appid="text2sam",
     name="Text to SAM",
     apptype=FlipperAppType.EXTERNAL,
-    entry_point="sam_app",
-    cdefines=["APP_SAM"],
-    # requires=["gui",],
+    entry_point="text2sam",
+    cdefines=["APP_SAM_1"],
     requires=[
         "gui",
         "dialogs",
     ],
     stack_size=4 * 1024,
-    # stack_size=2 * 1024,
-    fap_icon="icon.png",
-    fap_category="",
+    fap_icon="icon1.png",
+    fap_category="Music",
+    order=20,
+)
+
+App( # not working
+    appid="text2sam2",
+    name="Text 2 SAM 2",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="text2sam2",
+    cdefines=["APP_SAM_2"],
+    requires=[
+        "gui",
+        "dialogs",
+    ],
+    stack_size=4 * 1024,
+    fap_icon="icon2.png",
+    fap_category="Music",
+    order=20,
+)
+
+App( # not working
+    appid="text2sam_remote",
+    name="Text to SAM remote",
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="text2sam_remote",
+    cdefines=["APP_SAM_3"],
+    requires=[
+        "gui",
+        "dialogs",
+    ],
+    stack_size=4 * 1024,
+    fap_icon="icon3.png",
+    fap_category="Music",
     order=20,
 )
